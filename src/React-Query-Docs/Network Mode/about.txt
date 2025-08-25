@@ -1,0 +1,23 @@
+Network Mode în TanStack Query = cum se comportă Query-urile/Mutațiile când nu ai internet.
+
+1. online (implicit)
+- Funcționează numai dacă ai internet.
+- Dacă nu ai conexiune → query-ul nu rulează, doar stă pe pauză.
+- Când revii online → query-ul continuă de unde a rămas.
+- Bun pentru aplicații normale care au nevoie de internet pentru date.
+
+2. always
+- Rulările se fac indiferent dacă ai sau nu internet.
+- Folositor când nu depinzi de internet (ex: citești dintr-un cache local sau AsyncStorage).
+- Dacă dă eroare → nu stă pe pauză, trece direct în error.
+- Nu reface automat query-ul când revii online.
+
+3. offlineFirst
+Face o singură încercare → dacă reușește din cache/offline storage, e ok.
+Dacă nu găsește în cache și nu ai net → pune pe pauză.
+Ideal pentru aplicații PWA offline-first (care au service worker sau caching HTTP).
+
+Pe scurt:
+online = merge doar cu net, se pune pe pauză dacă nu ai
+always = rulează oricum, chiar și fără net.
+offlineFirst = încearcă din cache, dacă nu reușește și n-ai net → așteaptă

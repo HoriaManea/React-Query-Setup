@@ -1,0 +1,7 @@
+Indicatori pentru Background Fetching
+
+Starea status === 'pending' a unui query este suficientă pentru a afișa starea inițială de încărcare (hard-loading) a unui query, dar uneori este posibil să dorești să afișezi un indicator suplimentar care arată că un query este reîncărcat în fundal. Pentru a face acest lucru, query-urile îți oferă și un boolean isFetching, pe care îl poți folosi pentru a arăta că se află într-o stare de fetching, indiferent de valoarea variabilei status.
+
+Afișarea stării globale de Background Fetching
+
+Pe lângă stările individuale de încărcare ale query-urilor, dacă dorești să afișezi un indicator global de încărcare atunci când orice query se află în fetching (inclusiv în fundal), poți folosi hook-ul useIsFetching.

@@ -1,0 +1,9 @@
+Dacă utilizatorul pleacă din aplicație (schimbă tab, minimizează fereastra, etc.) și datele query-ului sunt stale…
+
+TanStack Query nu face fetch imediat, ci așteaptă să revină în aplicație.
+
+În momentul în care fereastra revine în focus, query-ul va face refetch automat în fundal.
+
+Deci, da: dacă revine peste o oră, abia atunci se va refetch-ui.
+
+Dacă vrei să dezactivezi acest comportament, folosești refetchOnWindowFocus: false.

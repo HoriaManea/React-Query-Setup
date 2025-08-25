@@ -1,0 +1,13 @@
+Retry la Query-uri
+
+Când un query useQuery eșuează (funcția query aruncă o eroare), TanStack Query va încerca automat din nou query-ul dacă nu s-a atins numărul maxim de retry-uri consecutive (implicit 3) sau dacă ai furnizat o funcție care decide dacă retry-ul este permis.
+
+Retry Delay
+
+Implicit, retry-urile nu se fac imediat după un eșec. Se aplică un back-off delay care crește treptat cu fiecare încercare.
+
+retryDelay implicit: se dublează la fiecare retry, începând de la 1000ms, dar nu depășește 30s.
+
+Poți suprascrie retryDelay atât la nivel global (Provider), cât și pentru query individual.
+
+Dacă pui un număr fix, delay-ul va fi mereu același pentru toate retry-urile.

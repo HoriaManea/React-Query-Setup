@@ -1,0 +1,15 @@
+Dacă numărul de query-uri nu se schimbă, nu e nevoie de nimic special: pur și simplu folosești mai multe hook-uri useQuery sau useInfiniteQuery unul lângă altul.
+
+Dynamic Parallel Queries cu useQueries
+
+Dacă numărul de query-uri se schimbă de la un render la altul, nu poți folosi metoda manuală (ar încălca regulile hook-urilor).
+➡️ În acest caz, folosești hook-ul useQueries, care îți permite să rulezi dinamic oricâte query-uri paralele ai nevoie.
+
+useQueries primește un obiect de opțiuni care are cheia queries, iar valoarea este un array de obiecte de query.
+La final, returnează un array cu rezultatele query-urilor.
+
+Manual Parallel = folosești mai multe useQuery direct, bun dacă numărul de query-uri e fix.
+
+Dynamic Parallel (useQueries) = bun dacă numărul de query-uri se schimbă (ex. ai o listă de utilizatori și faci query pentru fiecare)
+
+
