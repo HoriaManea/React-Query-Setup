@@ -1,0 +1,130 @@
+Mutations
+
+Spre deosebire de queries, mutations sunt folosite în general pentru a crea, actualiza sau șterge date sau pentru a produce efecte secundare pe server. În acest scop, TanStack Query exportă un hook numit useMutation.
+
+O mutation poate fi într-una dintre următoarele stări în orice moment:
+
+isIdle sau status === 'idle' – Mutation-ul este inactiv sau într-o stare proaspătă/resetată.
+
+isPending sau status === 'pending' – Mutation-ul este în curs de execuție.
+
+isError sau status === 'error' – Mutation-ul a întâmpinat o eroare.
+
+isSuccess sau status === 'success' – Mutation-ul a fost executat cu succes și datele sunt disponibile.
+
+Pe lângă aceste stări principale, mai există informații suplimentare în funcție de starea mutation-ului:
+
+error – Dacă mutation-ul este în stare de eroare, eroarea este disponibilă prin proprietatea error.
+
+data – Dacă mutation-ul este în stare de succes, datele sunt disponibile prin proprietatea data.
+
+Se pot transmite variabile funcției de mutation apelând mutate cu un obiect sau o variabilă. Chiar și doar cu variabile, mutations nu sunt neapărat speciale, dar atunci când sunt folosite împreună cu opțiunile onSuccess, invalidateQueries și setQueryData ale Query Client, acestea devin foarte puternice.
+
+IMPORTANT: Funcția mutate este asincronă, ceea ce înseamnă că nu poate fi folosită direct într-un callback de eveniment în React 16 sau anterior. Dacă trebuie să accesezi evenimentul în onSubmit, trebuie să înfășori mutate într-o altă funcție. Acest lucru se datorează pooling-ului de evenimente din React.
+
+Resetarea stării unui Mutation
+Uneori este necesar să ștergi eroarea sau datele unui request de mutation. Pentru aceasta, poți folosi funcția reset.
+
+Efecte secundare ale Mutation-urilor
+useMutation vine cu opțiuni helper care permit efectuarea rapidă de efecte secundare în orice etapă a ciclului de viață al mutation-ului. Acestea sunt utile pentru invalidarea și re-fetching-ul query-urilor după mutations sau chiar pentru actualizări optimiste.
+
+Poți dori să declanșezi callback-uri suplimentare la apelarea mutate. Acestea pot fi folosite pentru efecte secundare specifice componentelor. Opțiunile suportate includ onSuccess, onError și onSettled. Reține că aceste callback-uri suplimentare nu vor rula dacă componenta este demontată înainte ca mutation-ul să se finalizeze.
+
+Mutations consecutive
+Există o diferență minoră în modul de tratare al callback-urilor onSuccess, onError și onSettled pentru mutations consecutive. Atunci când sunt transmise funcției mutate, acestea se vor declanșa o singură dată și doar dacă componenta este încă montată. În schimb, handler-ele useMutation se execută pentru fiecare apel mutate.
+
+Este important de știut că mutationFn transmis la useMutation este de obicei asincron, astfel încât ordinea în care mutations se finalizează poate diferi de ordinea apelurilor mutate.
+
+Promises
+Folosește mutateAsync în loc de mutate pentru a obține un promise care se va rezolva la succes sau va arunca o eroare. Acest lucru poate fi folosit pentru a compune efecte secundare.
+
+Retry
+Implicit, TanStack Query nu reîncearcă un mutation după eroare, dar acest lucru este posibil cu opțiunea retry. Dacă mutations eșuează pentru că dispozitivul este offline, acestea vor fi reîncercate în aceeași ordine când dispozitivul se reconectează.
+
+Persistarea mutations
+Mutations pot fi persistate în storage și reluate ulterior folosind funcțiile de hidratare (hydrate / dehydrate). Dacă folosești plugin-ul persistQueryClient, mutations offline nu pot fi reluate după reload-ul paginii fără o funcție default de mutation. Aceasta este o limitare tehnică: doar starea mutations poate fi serializată, funcțiile nu. După hidratare, componenta care declanșează mutation-ul poate să nu fie montată, astfel că apelarea resumePausedMutations poate genera eroarea "No mutationFn found".
+
+Scopurile Mutation-urilor
+Implicit, toate mutations rulează în paralel, chiar dacă apelezi .mutate() de mai multe ori pentru aceeași mutation. Mutations pot avea un scope cu un id pentru a evita acest lucru. Toate mutations cu același scope.id vor rula în serie, intrând în starea isPaused: true dacă există deja o mutation în curs pentru acel scope. Vor fi puse în coadă și vor fi reluate automat când le vine rândul.
+
+Lecturi suplimentare
+Pentru mai multe informații despre mutations, consultă resursa comunității „Mastering Mutations in React Query”.
+
+
+1. Crearea mutation-ului
+const mutation = useMutation({
+  mutationFn: (newTodo) => {
+    return axios.post('/todos', newTodo)
+  },
+})
+
+
+useMutation este hook-ul React Query folosit pentru a crea sau modifica date pe server (spre deosebire de useQuery care doar citește date).
+
+mutationFn este funcția efectivă care execută acțiunea: aici folosește axios.post pentru a trimite un newTodo către endpoint-ul /todos.
+
+mutation este un obiect care conține starea mutation-ului și funcții pentru a-l controla (mutate, reset, plus stări ca isPending, isError, isSuccess).
+
+2. Condițiile de afișare în UI
+{mutation.isPending ? (
+  'Adding todo...'
+) : (
+  <>
+    {mutation.isError ? (
+      <div>An error occurred: {mutation.error.message}</div>
+    ) : null}
+
+    {mutation.isSuccess ? <div>Todo added!</div> : null}
+
+    <button
+      onClick={() => {
+        mutation.mutate({ id: new Date(), title: 'Do Laundry' })
+      }}
+    >
+      Create Todo
+    </button>
+  </>
+)}
+
+
+mutation.isPending → dacă mutation-ul este în curs, arată textul "Adding todo...".
+
+mutation.isError → dacă a apărut o eroare, afișează mesajul erorii (mutation.error.message).
+
+mutation.isSuccess → dacă mutation-ul a fost efectuat cu succes, afișează "Todo added!".
+
+Button-ul apelează mutation.mutate(...) cu obiectul nou, declanșând mutation-ul.
+
+3. Ce se întâmplă la click pe buton
+mutation.mutate({ id: new Date(), title: 'Do Laundry' })
+
+
+mutate apelează mutationFn definit mai sus, deci face un POST la /todos cu obiectul { id: new Date(), title: 'Do Laundry' }.
+
+React Query setează starea isPending = true până când cererea se finalizează. UI-ul arată "Adding todo...".
+
+Dacă request-ul se finalizează cu succes:
+
+isPending = false
+
+isSuccess = true
+
+UI-ul afișează "Todo added!".
+
+Dacă apare o eroare:
+
+isPending = false
+
+isError = true
+
+UI-ul afișează mesajul erorii.
+
+4. Rezumat flux mutation
+
+Apare un click → mutate() este apelat cu datele noi.
+
+React Query execută mutationFn.
+
+Stările isPending, isError, isSuccess se actualizează automat.
+
+UI-ul reacționează la aceste stări și afișează feedback corespunzător utilizatorului.

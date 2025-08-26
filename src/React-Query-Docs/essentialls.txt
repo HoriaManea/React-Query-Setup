@@ -1,0 +1,89 @@
+1️⃣ Conceptul de bază
+
+React Query nu este doar un fetcher de date. Rolul lui principal: gestionarea stării server-side a datelor (remote data) în React.
+
+Ce trebuie să știi:
+
+useQuery – pentru a citi date de la server.
+
+useMutation – pentru a modifica date (POST, PUT, DELETE etc.).
+
+QueryClient – locul unde sunt stocate toate cache-urile și setările globale.
+
+Caching / Invalidations / Refetching – React Query știe când să refetch-uiască automat datele și cum să păstreze ce e deja în cache.
+
+2️⃣ Ce trebuie să știi despre useQuery
+
+Exemplu minimal:
+
+const { data, error, isLoading, isFetching } = useQuery({
+  queryKey: ['todos'],
+  queryFn: fetchTodos,
+})
+
+
+queryKey – cheia care identifică query-ul în cache.
+
+queryFn – funcția care face fetch-ul de la server.
+
+isLoading / isFetching / error / data – stările importante.
+
+Must-know:
+
+Query-urile se refetch-uiască automat la focus-ul ferestrei (default) – se poate controla.
+
+Se poate pune staleTime (cât timp datele sunt considerate fresh) și cacheTime (cât timp sunt ținute în memorie).
+
+select permite să transformi datele înainte de a le returna în componentă.
+
+3️⃣ Ce trebuie să știi despre useMutation
+
+Exemplu minimal:
+
+const mutation = useMutation({
+  mutationFn: (newTodo) => axios.post('/todos', newTodo),
+  onSuccess: () => queryClient.invalidateQueries(['todos']),
+})
+
+
+mutationFn – funcția care modifică server-side data.
+
+onSuccess / onError / onSettled – lifecycle hooks.
+
+invalidateQueries – forțează refetch-ul query-urilor afectate.
+
+Must-know:
+Mutations nu țin date în cache direct (cum fac query-urile), trebuie să le invalidăm manual sau să folosim optimistic updates.
+
+4️⃣ QueryClient
+
+Există un singur QueryClient pe aplicație.
+
+Este responsabil cu cache-ul și strategiile globale (retry, refetchOnWindowFocus etc.).
+
+Exemple utile:
+
+queryClient.invalidateQueries(['todos']) // refetch
+queryClient.setQueryData(['todos'], updatedData) // update manual
+
+5️⃣ Funcționalități avansate, dar utile de reținut
+
+Prefetching – poți prelua datele înainte să fie nevoie.
+
+Infinite Queries / Paginated Queries – pentru liste mari.
+
+Devtools – foarte util să vezi cache-ul și query-urile.
+
+✅ Ce trebuie să memorezi concret
+
+useQuery – pentru fetch, cu stările principale (isLoading, data, error).
+
+useMutation – pentru modificări, și invalidateQueries după success.
+
+QueryClient – cum să faci invalidate sau setQueryData.
+
+Keys – cum să construiești chei unice și consistente.
+
+Cache / staleTime / refetchOnWindowFocus – pentru performanță și UX.
+
+Optimistic updates doar dacă trebuie să faci aplicații rapide fără delay vizibil.

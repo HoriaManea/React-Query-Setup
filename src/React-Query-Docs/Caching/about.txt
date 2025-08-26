@@ -1,0 +1,13 @@
+Când folosești useQuery pentru prima dată, React Query face cererea la server și pune datele în cache.
+
+Dacă creezi o a doua instanță cu aceeași cheie, primește imediat datele din cache, dar tot face o cerere în fundal ca să aducă datele actualizate.
+
+Dacă ambele instanțe se folosesc simultan, starea lor (loading, fetching etc.) se sincronizează pentru că au aceeași cheie.
+
+Când instanțele nu mai sunt folosite, React Query așteaptă puțin (gcTime, 5 minute) înainte să șteargă datele din cache.
+
+Dacă în acest timp apare o nouă instanță, primește datele existente din cache imediat și actualizează datele în fundal.
+
+După ce nu mai există instanțe timp de 5 minute, datele din cache sunt șterse automat.
+
+Pe scurt: cache-ul oferă date rapid, actualizează datele în fundal și curăță automat ce nu se mai folosește.
